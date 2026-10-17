@@ -101,12 +101,12 @@ try {
   await writeFile(projectMcpJsonFile(root), "{}\n");
 
   const keys = projectConfigWatchKeys([root]);
-  assert.equal(keys.has(resolve(root)), true);
-  assert.equal(keys.has(resolve(join(root, ".dsh"))), true);
-  assert.equal(keys.has(resolve(projectMcpFile(root))), true);
-  assert.equal(keys.has(resolve(projectDshJsonFile(root))), true);
-  assert.equal(keys.has(resolve(projectMcpJsonFile(root))), true);
-  assert.equal(keys.has(resolve(join(root, "lib"))), false);
+  assert.equal(keys.has(normalizeForAllow(root)), true);
+  assert.equal(keys.has(normalizeForAllow(join(root, ".dsh"))), true);
+  assert.equal(keys.has(normalizeForAllow(projectMcpFile(root))), true);
+  assert.equal(keys.has(normalizeForAllow(projectDshJsonFile(root))), true);
+  assert.equal(keys.has(normalizeForAllow(projectMcpJsonFile(root))), true);
+  assert.equal(keys.has(normalizeForAllow(join(root, "lib"))), false);
   pass("projectConfigWatchKeys lists the root, .dsh, and the three config files");
 
   const events = [];
