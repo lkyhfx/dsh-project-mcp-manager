@@ -2,12 +2,12 @@
 
 ## 项目概览
 
-`dsh-project-mcp-manager`（v0.8.2）是一个 **DSH 插件**（默认 bundle 含核心装载器与 `packages/ui/` 的设置页；UI 可单独停用）：为每个项目自动装载 MCP 服务器。项目配置放 `<projectRoot>/.dsh/mcp.yml`（原生受管块）或 `<projectRoot>/.dsh/mcp.json`（JSON 方言），dsh 会话在该项目开启时自动经 `@deepseek-ai/dsh-mcp-client` 装载，文件改动热重载，工具可见性按会话 cwd 隔离。用户层（`~/.dsh/mcp.yml`、`~/.dsh/mcp.json`、`~/.dsh/profiles/<name>/mcp.yml`、`~/.dsh/profiles/<name>/mcp.json`）为**全局装载**（宿主级一条连接）。遗留 Claude Code 项目文件 `<projectRoot>/.mcp.json` 只读兼容；`~/.claude.json` 自 v0.4.0 起不再读取。`dsh-mcp` CLI 可写原生 yml 或 DSH JSON。
+`dsh-project-mcp-manager`（v0.9.0）是一个 **DSH 插件**（默认 bundle 含核心装载器与 `packages/ui/` 的设置页；UI 可单独停用）：为每个项目自动装载 MCP 服务器。项目配置放 `<projectRoot>/.dsh/mcp.yml`（原生受管块）或 `<projectRoot>/.dsh/mcp.json`（JSON 方言），dsh 会话在该项目开启时自动经 `@deepseek-ai/dsh-mcp-client` 装载，文件改动热重载，工具可见性按会话原始项目（`session.header.cwd`）隔离。dsh 0.2.1 的 `working_directory` 只改当前执行目录，不改 `header.cwd`，因此不挪焦点。用户层（`~/.dsh/mcp.yml`、`~/.dsh/mcp.json`、`~/.dsh/profiles/<name>/mcp.yml`、`~/.dsh/profiles/<name>/mcp.json`）为**全局装载**（宿主级一条连接）。遗留 Claude Code 项目文件 `<projectRoot>/.mcp.json` 只读兼容；`~/.claude.json` 自 v0.4.0 起不再读取。`dsh-mcp` CLI 可写原生 yml 或 DSH JSON。
 
 - 语言：TypeScript（ESM，`"type": "module"`），`target ES2022` / `module NodeNext`，`strict: true`（`noImplicitAny: false`）。
 - 编译产物：`src/` → `lib/`（`main: lib/index.js`，`types: lib/index.d.ts`；`declaration: true`）。包入口再导出查询面视图类型；`exports` 不开放 `lib/` 深导入。
-- 宿主框架：cordis（`@deepseek-ai/cordis`，devDependency `^4.0.4`，对齐 dsh 0.2.0-rc.2）；插件入口声明 `inject = ["tools", "agents"]`（agents 为硬依赖，保证构造时补扫能看到已恢复会话）。
-- 运行时依赖：`@deepseek-ai/dsh-mcp-client@^0.2.0-rc.2`、`chokidar@^5`、`yaml@^2`、`zod@^4`，以及同一精确版本的 `dsh-project-mcp-ui`（源码用 `workspace:<精确版本>`，打包后为无 `^` / `~` 的精确版本；UI 保留精确 manager peer，两包同步升版、同步发布）。支持矩阵为 dsh **0.2.0-rc.2** 起的 `0.2.0` 元组；0.1.5 宿主继续使用 v0.6.0。
+- 宿主框架：cordis（`@deepseek-ai/cordis`，devDependency `^4.0.5`，对齐 dsh 0.2.1-rc.2）；插件入口声明 `inject = ["tools", "agents"]`（agents 为硬依赖，保证构造时补扫能看到已恢复会话）。两包 `engines.dsh` 为 `^0.2.1-rc.2`（宿主检查带 `includePrerelease`，上限等价于 `<0.3.0-0`）。
+- 运行时依赖：`@deepseek-ai/dsh-mcp-client@^0.2.1-rc.2`、`chokidar@^5`、`yaml@^2`、`zod@^4`，以及同一精确版本的 `dsh-project-mcp-ui`（源码用 `workspace:<精确版本>`，打包后为无 `^` / `~` 的精确版本；UI 保留精确 manager peer，两包同步升版、同步发布）。支持矩阵为 dsh **0.2.1-rc.2** 起的 `0.2` 线（`<0.3.0-0`）。dsh 0.2.0 继续使用 v0.8.2；0.1.5 宿主继续使用 v0.6.0。
 
 ## 目录结构
 
