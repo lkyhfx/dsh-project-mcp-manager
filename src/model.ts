@@ -196,14 +196,15 @@ const serverNameSchema = z.string().regex(SERVER_NAME_RE, "serverName 只能包�
 const secretMapSchema = z.record(z.string(), z.string().nullable()).optional();
 /**
  * 与官方 dsh-mcp-client 的 reconnect 上限一致（@deepseek-ai/dsh-mcp-client
- * lib/index.js:734-735）；2147483647 = MAX_TIMER_DELAY_MS（@deepseek-ai/
- * dsh-timeout，Node 不钳制的最大 timer 延迟）。上限不镜像的话越界值会绕过
- * 本地校验、到 ctx.plugin 装载时才以 plugin-throw 爆错，归因更晚更难查。
+ * 0.2.1-rc.2 lib/index.js 的 reconnect schema `.max(MAX_TIMER_DELAY_MS)`）；
+ * 2147483647 = MAX_TIMER_DELAY_MS（@deepseek-ai/dsh-timeout，Node 不钳制的最大
+ * timer 延迟）。上限不镜像的话越界值会绕过本地校验，到 ctx.plugin 装载时才以
+ * plugin-throw 爆错，归因更晚更难查。
  */
 export const MAX_TIMER_DELAY_MS = 2147483647;
 
 /**
- * 官方 `@deepseek-ai/dsh-mcp-client` 0.2.0-rc.2 支持的 MCP 传输集合
+ * 官方 `@deepseek-ai/dsh-mcp-client` 0.2.1-rc.2 支持的 MCP 传输集合
  * （config.transport 判别联合：`stdio` | `streamable-http`）。本插件不实现
  * 传输，只负责表达；schema / CLI / JSON 读取器 / 报错文案全部从这里派生。
  * 官方新增传输时：常量加值 + 一条 CLI/JSON 别名映射 + 文档 + 测试，不要再

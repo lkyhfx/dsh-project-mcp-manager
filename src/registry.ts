@@ -16,13 +16,15 @@
  *   - 生效名：原始 serverName 在整个目录（全局行 + 全部项目行）中唯一时保持
  *     原名；否则按 model.effectiveServerNames 规则改名（确定性、与装载顺序
  *     无关），避免 dsh-mcp-client 按进程根的 serverName 预留冲突；
- *   - 会话可见性：agent 创建时按其会话 cwd 解析项目，对该 agent 层应用
- *     tools.restrict({ deny })，deny 掉「除本会话项目外的全部项目服务器」；
- *     目录变化（项目文件增删改、新 agent、装载 settle）都会重扫。
+ *   - 会话可见性：agent 创建时按其会话原始项目（`session.header.cwd`）解析
+ *     项目，对该 agent 层应用 tools.restrict({ deny })，deny 掉「除本会话项目外
+ *     的全部项目服务器」；目录变化（项目文件增删改、新 agent、装载 settle）都会
+ *     重扫。dsh 0.2.1 的 working-directory 服务另记当前执行目录，不改 header，
+ *     因此 `working_directory` 不挪项目焦点、也不改工具可见性。
  *
  * 子代理（subagent）不继承父 agent 层的 restrict，但本注册表对每个 live
- * agent（含子代理）都按各自会话 cwd 应用同样的 deny 规则，因此行为一致。
- * 会话无 cwd 且无 owner 时回退 dsh 进程 cwd 所在项目（“在该项目开启 dsh
+ * agent（含子代理）都按各自会话原始项目应用同样的 deny 规则，因此行为一致。
+ * 会话无 header.cwd 且无 owner 时回退 dsh 进程 cwd 所在项目（“在该项目开启 dsh
  * 会话”场景）。
  *
  * 配置来源（同一项目内合并=遮蔽优先序，先到先得；跨项目撞名仍走生效名改名）：
@@ -363,6 +365,10 @@ export function projectMcpJsonFile(projectRoot: string): string {
   return join(projectRoot, CC_PROJECT_FILE);
 }
 
+/**
+ * 会话的原始项目目录。dsh 0.2.1 起 header.cwd 在会话创建后不变；
+ * 当前执行目录在 working-directory 投影里，不从这里读。
+ */
 function cwdOfSessionRecord(value: any): string | undefined {
   const cwd = value?.header?.cwd ?? value?.session?.header?.cwd ?? value?.cwd;
   return typeof cwd === "string" && cwd !== "" ? cwd : undefined;
