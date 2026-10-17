@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.8.1] - 2026-10-17
+## [0.8.2] - 2026-10-17
 
-Versioned together with `dsh-project-mcp-ui` 0.8.1. This source version and
+Versioned together with `dsh-project-mcp-ui` 0.8.2. This source version and
 Git tag do not imply that either package has been published to npm.
+
+0.8.1 was an internal version, not a normal release. The notes below are the
+0.8.1 notes.
 
 ### Fixed
 
@@ -25,6 +28,11 @@ Git tag do not imply that either package has been published to npm.
 
 - Notes from the npm 0.8.0 web-profile check and the local artifact cleanup
   policy now live under `docs/testing/`.
+
+## [0.8.1] - 2026-10-17
+
+Internal version. Not a normal release. The changes are recorded under
+[0.8.2](https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...v0.8.2).
 
 ## [0.8.0] - 2026-10-03
 
@@ -868,7 +876,8 @@ carry an explicit `type`.
 Security note: `stdio` lines in `.dsh/mcp.yml` spawn their `command` inside the dsh host
 process, so project files are executable-code carriers — add them only in trusted projects.
 
-[unreleased]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.1...HEAD
+[unreleased]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.2...HEAD
+[0.8.2]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...v0.8.2
 [0.8.1]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.7.1...v0.7.2
