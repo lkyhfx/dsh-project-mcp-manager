@@ -21,6 +21,9 @@
       "patch": "./cordis.patch.yml"
     }
   },
+  "engines": {
+    "dsh": "^0.2.1-rc.2"
+  },
   "license": "MIT",
   "author": "wldxiaobai <944418001@qq.com>",
   "repository": {
