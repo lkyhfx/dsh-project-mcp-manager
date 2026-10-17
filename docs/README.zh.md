@@ -170,10 +170,12 @@ pnpm test          # node 直跑 test/ 下的 .mjs（装载器、CLI 与设置�
   立刻卸载，避免桌面端切走后别的项目的工具还留在全局工具层。条目与文件监听保留。
   **用户层每行只装载一个实例**（全局，与项目数无关）
   ——详见[配置来源与分层](guide/layers.zh.md)。
-- **热重载**：chokidar 监听各项目根（depth 2，忽略 node_modules/.git/.hg/
-  .svn），但只有**已知项目根的精确配置文件**（`<projectRoot>/.dsh/mcp.yml`、
-  `<projectRoot>/.dsh/mcp.json` 与 `<projectRoot>/.mcp.json`）的改动经 150ms
-  防抖触发全量对账：新增行装载、删除行卸载、配置变化重装。另有独立 watcher 以
+- **热重载**：chokidar 只监听已知项目根和它的 `.dsh`（depth 1）。放行的是
+  项目根、`.dsh` 和三个配置文件，其它路径一律忽略，因此不会打开 `lib/`、
+  `src/`、`build/`，Windows 上构建时可以删掉这些目录。只有**已知项目根的精确
+  配置文件**（`<projectRoot>/.dsh/mcp.yml`、`<projectRoot>/.dsh/mcp.json` 与
+  `<projectRoot>/.mcp.json`）的改动经 150ms 防抖触发全量对账：新增行装载、
+  删除行卸载、配置变化重装。另有独立 watcher 以
   **精确文件路径**监听用户层：`~/.dsh/mcp.yml`、`~/.dsh/mcp.json`、
   `~/.dsh/profiles/<当前 profile>/mcp.yml` 与 `mcp.json`，以及 `$DSH_HOME/dsh-mcp.json`
   （对方插件的全局存储；只监听以便创建时能立刻诊断，从不装载）。chokidar v5

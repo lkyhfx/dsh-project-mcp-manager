@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The project watcher no longer opens the first two levels of a workspace.
+  It watches the project root and `.dsh` only (depth 1), and the allow-list
+  is those directories plus `.dsh/mcp.yml`, `.dsh/mcp.json`, and `.mcp.json`.
+  On Windows, watches on `lib/` and similar directories kept the directory
+  delete-pending, so the next build's clean failed with `ENOTEMPTY` and the
+  path could not be recreated until the host restarted.
+
 ## [0.8.0] - 2026-10-03
 
 Versioned together with `dsh-project-mcp-ui` 0.8.0. This source version and

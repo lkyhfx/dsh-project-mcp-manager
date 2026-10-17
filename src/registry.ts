@@ -387,6 +387,22 @@ function isSameFilePath(left: string, right: string): boolean {
   return normalizePathKey(left) === normalizePathKey(right);
 }
 
+/**
+ * 项目 watcher 允许打开的路径：项目根、`.dsh`，以及三个配置文件。
+ * chokidar 5 调用 `ignored` 前会把路径收成正斜杠，比对必须再走 `normalizePathKey`。
+ */
+export function projectConfigWatchKeys(roots: readonly string[]): Set<string> {
+  const keys = new Set<string>();
+  for (const root of roots) {
+    keys.add(normalizePathKey(root));
+    keys.add(normalizePathKey(join(root, ".dsh")));
+    keys.add(normalizePathKey(projectMcpFile(root)));
+    keys.add(normalizePathKey(projectDshJsonFile(root)));
+    keys.add(normalizePathKey(projectMcpJsonFile(root)));
+  }
+  return keys;
+}
+
 const SOURCE_RANK: Record<McpRowSource, number> = {
   "dsh-project": 0,
   "dsh-project-json": 1,
@@ -1304,15 +1320,18 @@ export class ProjectMcpRegistry {
     if (old !== undefined) await this.closeWatcher(old);
     this.watchedFiles = keys;
     if (keys.length === 0 || this.disposed) return;
-    // chokidar 不会监听尚不存在的嵌套文件：改为监听项目根（depth 2 覆盖
-    // .dsh/mcp.yml），事件回调里按精确路径过滤。
+    // 只放行项目根、`.dsh` 和三个配置文件。chokidar 对每个未忽略的目录和文件
+    // 各开一个 fs.watch；Windows 上文件监听也打开父目录句柄，句柄不关则删除
+    // 停在 delete-pending（父目录 ENOTEMPTY，原路径重建 EPERM）。
+    // depth 用 1：0 看不到 `.dsh` 里的文件；再深就会打开 lib、src 这一层。
+    // 三个文件必须在集合里：目录重读只发新增和删除，内容变化靠文件自己的 fs.watch。
+    // 不能改成只盯这三个路径。`.dsh` 还不存在时，chokidar 会退回监听项目根，
+    // 并且只匹配根下名叫 mcp.yml 的文件，之后创建的 `.dsh/mcp.yml` 收不到。
+    const allow = projectConfigWatchKeys(roots);
     const watcher = chokidar.watch(roots, {
       ignoreInitial: true,
-      depth: 2,
-      ignored: (candidate: string) => {
-        const parts = candidate.split(/[/\\]/);
-        return parts.some((part) => part === "node_modules" || part === ".git" || part === ".hg" || part === ".svn");
-      }
+      depth: 1,
+      ignored: (candidate: string) => !allow.has(normalizePathKey(candidate))
     });
     // .mcp.json 与 .dsh/mcp.yml、.dsh/mcp.json 平级热重载：都按「已知项目根下的
     // 精确文件」比对，项目树里其它位置的同名文件（嵌套子目录的 .dsh/mcp.yml 等）不误触发。

@@ -199,12 +199,15 @@ pnpm test          # node test/*.mjs (loader, CLI, and settings-page helpers)
   user-layer row mounts exactly one instance** (global, independent of the
   number of projects) — see
   [configuration sources and layers](docs/guide/layers.md).
-- **Hot reload**: chokidar watches each project root (depth 2, ignoring
-  node_modules/.git/.hg/.svn), but only edits to the **exact** config files of
-  known project roots — `<projectRoot>/.dsh/mcp.yml`,
-  `<projectRoot>/.dsh/mcp.json` and `<projectRoot>/.mcp.json` — trigger a full
-  reconciliation after a 150 ms debounce: added rows are mounted, removed rows
-  are unmounted, and config changes are remounted. A second watcher covers the
+- **Hot reload**: chokidar watches each known project root and its `.dsh`
+  directory (depth 1). The allow-list is that root, `.dsh`, and the three
+  config files; every other path is ignored, so the watcher does not open
+  `lib/`, `src/`, or `build/` and a Windows build can delete those directories
+  while dsh is running. Edits to the **exact** config files of known project
+  roots — `<projectRoot>/.dsh/mcp.yml`, `<projectRoot>/.dsh/mcp.json` and
+  `<projectRoot>/.mcp.json` — trigger a full reconciliation after a 150 ms
+  debounce: added rows are mounted, removed rows are unmounted, and config
+  changes are remounted. A second watcher covers the
   user layer as **exact file paths** — `~/.dsh/mcp.yml`,
   `~/.dsh/mcp.json`, `~/.dsh/profiles/<active profile>/mcp.yml` and
   `mcp.json`, and
