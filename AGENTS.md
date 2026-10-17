@@ -75,6 +75,11 @@ npx tsc --noEmit       # 仅类型检查
 - **代码新功能（推荐）**：从当前 `dev` 拉出新分支开发，不要直接在 `dev` 上堆功能逻辑。其它会变动代码逻辑的改动（含修复）同样推荐走新分支。是否向远端 `dev` 发 PR，由用户决定；未经用户指示不得自行 push、开 PR 或合入远端 `dev`。
 - `main` 是受保护的稳定分支：**仅在用户明确允许时触碰**（含提交、合并、推送、开 PR）。agent 不得自行向 `main` 提交、合并或推送。
 
+## Cursor Cloud specific instructions
+
+- `pnpm test` 会直接加载 `.ts`。登录 shell 的 Node 必须是 22.23（`~/.local/bin/node`，默认剥离类型）和 pnpm 12.3.4。`/exec-daemon/node` 22.14 会在 `test/test-ui-collapse.mjs` 报 `Unknown file extension ".ts"`。
+- 不需要安装 dsh 宿主。`pnpm test` 覆盖装载器、CLI 和设置页辅助逻辑。CLI 冒烟用临时目录：`git init` 出一个项目根，设 `DSH_HOME`，再跑 `node lib/cli.js` 的 `add` / `list` / `get` / `remove`。`-e` 是 `--env` 的短选项，不要把它当成 node 的求值参数。
+
 ## 提交约定
 
 - commit 信息遵循仓库现有 git 历史风格；格式细则（Conventional Commits、中文 subject、暂存安全）见 `.dsh/skills/git-commits` skill，本文件不复述。
