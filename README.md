@@ -59,6 +59,7 @@ Design and release records (Chinese): [dsh 0.2.0-rc.2 adaptation](docs/design/ad
 [dsh 0.1.2-rc.1 adaptation](docs/design/adaptation-dsh-0.1.2-rc1.md) ·
 [JSON config layer proposal](docs/design/proposal-json-mcp-config.md) ·
 [Runtime robustness & JSON interop proposal](docs/design/proposal-runtime-robustness-and-json-interop.md) ·
+[v0.8.1 release notes](docs/releases/v0.8.1.md) ·
 [v0.7.2 release notes](docs/releases/v0.7.2.md) ·
 [v0.7.1 release notes](docs/releases/v0.7.1.md) ·
 [v0.7.0 release notes](docs/releases/v0.7.0.md) ·

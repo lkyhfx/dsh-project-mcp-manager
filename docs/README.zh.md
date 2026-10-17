@@ -50,6 +50,7 @@ client 决定。** v0.7.x 与 v0.8.x 面向 dsh `0.2.0` 线（从 0.2.0-rc.2 起
 [dsh 0.1.2-rc.1 适配记录](design/adaptation-dsh-0.1.2-rc1.md) ·
 [JSON 配置层设计提案](design/proposal-json-mcp-config.md) ·
 [运行时稳健性与 JSON 互通提案](design/proposal-runtime-robustness-and-json-interop.md) ·
+[v0.8.1 发布说明](releases/v0.8.1.md) ·
 [v0.7.2 发布说明](releases/v0.7.2.md) ·
 [v0.7.1 发布说明](releases/v0.7.1.md) ·
 [v0.7.0 发布说明](releases/v0.7.0.md) ·
