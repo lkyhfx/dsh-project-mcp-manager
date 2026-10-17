@@ -2642,6 +2642,47 @@ try {
   }
 }
 
+{
+  // 会话起来时项目还没有 .dsh。只盯三个尚不存在的文件路径会永久错过
+  // `.dsh/mcp.yml`；监听项目根之后再创建该文件，必须热装载。
+  const dirLate = await mkdtemp(join(tmpdir(), "dsh-mcp-late-dsh-"));
+  const homeLate = join(dirLate, "home");
+  const projLateWatch = join(dirLate, "proj");
+  await mkdir(join(homeLate, ".dsh"), { recursive: true });
+  await mkdir(projLateWatch, { recursive: true });
+  const ctxLate = fakeCtx();
+  const registryLate = new ProjectMcpRegistry(ctxLate, {
+    globalNames: async () => [],
+    userLayerPaths: { mcpYml: join(homeLate, ".dsh", "mcp.yml"), mcpJson: join(homeLate, ".dsh", "mcp.json"), profilesDir: join(homeLate, ".dsh", "profiles") }
+  });
+  try {
+    ctxLate.agentsList.push(fakeAgent("session-late-dsh", projLateWatch));
+    await registryLate.reconcileNow();
+    let countLate = registryLate.debugReconcileCount;
+    for (let waited = 0; waited < 6000; waited += 300) {
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 300));
+      const next = registryLate.debugReconcileCount;
+      if (next === countLate) break;
+      countLate = next;
+    }
+    await new Promise((resolveDelay) => setTimeout(resolveDelay, 400));
+    assert.equal(await pathExists(projectMcpFile(projLateWatch)), false, "the project starts without .dsh/mcp.yml");
+    await writeManagedRows(projectMcpFile(projLateWatch), [stdioRow("late-yml")], { createIfMissing: true });
+    assert.ok(
+      await registryLate.waitForState(projLateWatch, "late-yml", (state) => state?.phase === "active", 5000),
+      "creating .dsh/mcp.yml after the watcher is up hot-mounts"
+    );
+    assert.ok(registryLate.debugReconcileCount > countLate, "the new project yml must drive reconcile without reconcileNow");
+    pass("creating .dsh/mcp.yml after the project watcher starts hot-mounts");
+  } finally {
+    for (const disposer of ctxLate.disposers) {
+      const cleanup = disposer();
+      if (typeof cleanup === "function") cleanup();
+    }
+    await rmRetry(dirLate);
+  }
+}
+
 console.log("\n" + passed + " passed, 0 failed");
 console.log("ALL PROJECT REGISTRY TESTS PASSED");
 // chokidar close() is fire-and-forget in registry dispose; on Windows a
