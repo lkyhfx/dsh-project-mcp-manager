@@ -6,12 +6,13 @@ A project-level MCP auto-loading plugin for DSH: write MCP server configs in
 `<projectRoot>/.dsh/mcp.yml` or `.dsh/mcp.json` and they are mounted
 automatically (via the official `@deepseek-ai/dsh-mcp-client`) whenever a dsh
 session opens in that project. Changes to the file hot-reload into the running
-dsh process, and tool visibility is scoped per session cwd. The default
+dsh process, and tool visibility follows the session's original project
+(`session.header.cwd`). The default
 `dsh-project-mcp-manager` bundle includes the loader and the companion
 `dsh-project-mcp-ui` settings page for the web and desktop apps. The UI is
 enabled by default and can be disabled independently; the loader keeps working.
 
-**Capability boundary** (dsh ≥ 0.2.0-rc.2): the official client owns the
+**Capability boundary** (dsh ≥ 0.2.1-rc.2): the official client owns the
 protocol, reconnect, tool names, resources, and server instructions. Shipped
 profiles already mount shared MCP resource tools. Official configuration is
 a profile-layer Cordis patch (with that layer's own HMR) plus
@@ -19,12 +20,14 @@ a profile-layer Cordis patch (with that layer's own HMR) plus
 
 1. Project-level discovery of `<projectRoot>/.dsh/mcp.yml`, `.dsh/mcp.json`,
    and the read-only legacy `.mcp.json`.
-2. Tool visibility isolated by session cwd.
+2. Tool visibility isolated by the session's original project
+   (`session.header.cwd`). `working_directory` does not retarget it.
 3. The MCP file format, the `dsh-mcp` CLI, and the settings page.
 
 Project-file hot reload is this plugin's file watcher. It does not replace
 official profile HMR. **Transport types are decided by the official client.**
-v0.7.x and v0.8.x target the dsh `0.2.0` line starting at 0.2.0-rc.2. Hosts still on
+v0.9.x targets the dsh `0.2` line starting at 0.2.1-rc.2 (`engines.dsh` is
+`^0.2.1-rc.2`). Hosts on dsh 0.2.0 stay on plugin v0.8.2. Hosts still on
 dsh 0.1.5 should stay on plugin v0.6.0.
 
 If this plugin is useful, a GitHub
@@ -52,13 +55,16 @@ Feature documentation lives in `docs/`, English and Chinese side by side:
   `projectMcp/updated` event, exported view types, and the semver contract for
   the companion UI.
 
-Design and release records (Chinese): [dsh 0.2.0-rc.2 adaptation](docs/design/adaptation-dsh-0.2.0-rc.2.md) ·
+Design and release records (Chinese): [dsh 0.2.1-rc.2 adaptation](docs/design/adaptation-dsh-0.2.1-rc.2.md) ·
+[dsh 0.2.0-rc.2 adaptation](docs/design/adaptation-dsh-0.2.0-rc.2.md) ·
 [dsh 0.1.6-alpha.2 adaptation plan](docs/design/adaptation-dsh-0.1.6-alpha.2.md) ·
 [dsh 0.1.5-rc.2 adaptation](docs/design/adaptation-dsh-0.1.5-rc2.md) ·
 [dsh 0.1.5-rc.1 adaptation](docs/design/adaptation-dsh-0.1.5-rc1.md) ·
 [dsh 0.1.2-rc.1 adaptation](docs/design/adaptation-dsh-0.1.2-rc1.md) ·
 [JSON config layer proposal](docs/design/proposal-json-mcp-config.md) ·
 [Runtime robustness & JSON interop proposal](docs/design/proposal-runtime-robustness-and-json-interop.md) ·
+[v0.9.0 release notes](docs/releases/v0.9.0.md) ·
+[v0.8.2 release notes](docs/releases/v0.8.2.md) ·
 [v0.7.2 release notes](docs/releases/v0.7.2.md) ·
 [v0.7.1 release notes](docs/releases/v0.7.1.md) ·
 [v0.7.0 release notes](docs/releases/v0.7.0.md) ·
@@ -145,8 +151,9 @@ updated compiled output.
 **Upgrading / pinning versions**: re-run the `add` command from option 1 with
 the desired version suffix — `@latest` upgrades to the newest release,
 `@<version>` pins a specific release. For the bundled UI, choose the coordinated
-manager/UI release described above. v0.7.x and v0.8.x need dsh 0.2.0-rc.2 (the `0.2.0` line).
-dsh 0.1.5 keeps working with plugin `@0.6.0`.
+manager/UI release described above. v0.9.x needs dsh 0.2.1-rc.2 or a later `0.2`
+release (`engines.dsh`: `^0.2.1-rc.2`). v0.7.x and v0.8.x need dsh 0.2.0-rc.2
+(the `0.2.0` line). dsh 0.1.5 keeps working with plugin `@0.6.0`.
 
 **Settings page (included by default)**: the manager install above supplies
 the UI automatically in web and desktop profiles. Open Settings → Built-in plugins →
@@ -199,12 +206,15 @@ pnpm test          # node test/*.mjs (loader, CLI, and settings-page helpers)
   user-layer row mounts exactly one instance** (global, independent of the
   number of projects) — see
   [configuration sources and layers](docs/guide/layers.md).
-- **Hot reload**: chokidar watches each project root (depth 2, ignoring
-  node_modules/.git/.hg/.svn), but only edits to the **exact** config files of
-  known project roots — `<projectRoot>/.dsh/mcp.yml`,
-  `<projectRoot>/.dsh/mcp.json` and `<projectRoot>/.mcp.json` — trigger a full
-  reconciliation after a 150 ms debounce: added rows are mounted, removed rows
-  are unmounted, and config changes are remounted. A second watcher covers the
+- **Hot reload**: chokidar watches each known project root and its `.dsh`
+  directory (depth 1). The allow-list is that root, `.dsh`, and the three
+  config files; every other path is ignored, so the watcher does not open
+  `lib/`, `src/`, or `build/` and a Windows build can delete those directories
+  while dsh is running. Edits to the **exact** config files of known project
+  roots — `<projectRoot>/.dsh/mcp.yml`, `<projectRoot>/.dsh/mcp.json` and
+  `<projectRoot>/.mcp.json` — trigger a full reconciliation after a 150 ms
+  debounce: added rows are mounted, removed rows are unmounted, and config
+  changes are remounted. A second watcher covers the
   user layer as **exact file paths** — `~/.dsh/mcp.yml`,
   `~/.dsh/mcp.json`, `~/.dsh/profiles/<active profile>/mcp.yml` and
   `mcp.json`, and

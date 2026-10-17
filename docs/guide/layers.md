@@ -28,8 +28,10 @@ managed yml of the same scope and leaves the original file unchanged.
 **Global mounting vs project mounting**:
 
 - Project-layer rows: each project mounts its own `mcp-client` instance, made
-  visible only to sessions whose cwd is that project via
-  `tools.restrict({ deny })`.
+  visible only to sessions whose original project (`session.header.cwd`) is
+  that project via `tools.restrict({ deny })`. dsh 0.2.1's `working_directory`
+  changes the execution directory without changing `header.cwd`, so it does
+  not move this visibility.
 - User-layer rows: **exactly one connection at the host level**, independent of
   the number of projects, visible to every session; no more per-project
   fan-out. An empty `cwd` inherits the host working directory (an empty

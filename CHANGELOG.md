@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-17
+
+Versioned together with `dsh-project-mcp-ui` 0.9.0. This source version and
+Git tag do not imply that either package has been published to npm.
+
+Host alignment for dsh **0.2.1-rc.2**. v0.8.2 remains the release for the dsh
+`0.2.0` line. v0.6.0 remains the release for dsh 0.1.5.
+
+### Changed
+
+- **`@deepseek-ai/dsh-mcp-client` floor is `^0.2.1-rc.2`.** npm semver will
+  not select `0.2.1-rc.2` from `^0.2.0-rc.2`, and the new client's cordis peer
+  is `~4.0.5`. The UI runtime dependency `@deepseek-ai/dsh-native-command` and
+  the settings-page devDependencies move to the same tuple. cordis devDependency
+  is `^4.0.5`.
+- **`engines.dsh` is `^0.2.1-rc.2`** on both packages. dsh 0.2.1 checks that
+  range before dsh peer dependencies, with prereleases included. The caret
+  upper bound is `<0.3.0-0`, so a `0.3` prerelease is not accepted.
+- Project focus and tool visibility still follow `session.header.cwd`. On dsh
+  0.2.1 that field is the session's original project and stays unchanged;
+  `working_directory` updates a separate projection and does not retarget MCP.
+- The mirrored transport set is still `stdio | streamable-http`. The published
+  client bridge is the same code as 0.2.0-rc.2; it now loads MCP client SDK
+  2.2.0. `MAX_TIMER_DELAY_MS` stays `2147483647`.
+
+### Removed
+
+- The `minimumReleaseAgeExclude` entry for `@deepseek-ai/dsh-invariants`.
+  That package is not published at `0.2.1-rc.2`. New exclude entries cover
+  cordis 4.0.5, cosmokit 1.8.6, schemastery 3.18.5, and the new
+  `dsh-credentials`, `dsh-fs`, and `dsh-working-directory` peers.
+
+See [dsh 0.2.1-rc.2 adaptation record](docs/design/adaptation-dsh-0.2.1-rc.2.md).
+
+## [0.8.2] - 2026-10-17
+
+Versioned together with `dsh-project-mcp-ui` 0.8.2. This source version and
+Git tag do not imply that either package has been published to npm.
+
+0.8.1 was an internal version, not a normal release. The notes below are the
+0.8.1 notes.
+
+### Fixed
+
+- The project watcher no longer opens the first two levels of a workspace.
+  It watches the project root and `.dsh` only (depth 1), and the allow-list
+  is those directories plus `.dsh/mcp.yml`, `.dsh/mcp.json`, and `.mcp.json`.
+  On Windows, watches on `lib/` and similar directories kept the directory
+  delete-pending, so the next build's clean failed with `ENOTEMPTY` and the
+  path could not be recreated until the host restarted.
+
+### Changed
+
+- Notes from the npm 0.8.0 web-profile check and the local artifact cleanup
+  policy now live under `docs/testing/`.
+
+## [0.8.1] - 2026-10-17
+
+Internal version. Not a normal release. The changes are recorded under
+[0.8.2](https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...v0.8.2).
+
 ## [0.8.0] - 2026-10-03
 
 Versioned together with `dsh-project-mcp-ui` 0.8.0. This source version and
@@ -849,7 +910,10 @@ carry an explicit `type`.
 Security note: `stdio` lines in `.dsh/mcp.yml` spawn their `command` inside the dsh host
 process, so project files are executable-code carriers — add them only in trusted projects.
 
-[unreleased]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...HEAD
+[unreleased]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.2...v0.9.0
+[0.8.2]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...v0.8.2
+[0.8.1]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/wldxiaobai/dsh-project-mcp-manager/compare/v0.7.0...v0.7.1

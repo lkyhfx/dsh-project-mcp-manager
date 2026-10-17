@@ -1,6 +1,6 @@
 {
   "name": "dsh-project-mcp-manager",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "packageManager": "pnpm@12.3.4",
   "description": "MCP manager for DSH with default loader and settings UI components: project/global server loading, hot reload, per-session tool visibility, and the dsh-mcp CLI.",
   "type": "module",
@@ -21,6 +21,9 @@
       "patch": "./cordis.patch.yml"
     }
   },
+  "engines": {
+    "dsh": "^0.2.1-rc.2"
+  },
   "license": "MIT",
   "author": "wldxiaobai <944418001@qq.com>",
   "repository": {
@@ -40,9 +43,9 @@
     "cordis"
   ],
   "dependencies": {
-    "@deepseek-ai/dsh-mcp-client": "^0.2.0-rc.2",
+    "@deepseek-ai/dsh-mcp-client": "^0.2.1-rc.2",
     "chokidar": "^5.0.0",
-    "dsh-project-mcp-ui": "workspace:0.8.0",
+    "dsh-project-mcp-ui": "workspace:0.9.0",
     "yaml": "^2.9.0",
     "zod": "^4.4.3"
   },
@@ -52,7 +55,7 @@
     "build": "npm run build:core && npm --prefix packages/ui run build",
     "prepack": "npm run build",
     "pretest": "npm run build",
-    "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs"
+    "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-project-watch.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs"
   },
   "files": [
     "lib",
@@ -62,7 +65,7 @@
     "LICENSE"
   ],
   "devDependencies": {
-    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/cordis": "^4.0.5",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2"
   }

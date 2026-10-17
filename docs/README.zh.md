@@ -4,24 +4,26 @@
 
 项目级 MCP 自动加载插件：在项目根 `<projectRoot>/.dsh/mcp.yml` 或
 `.dsh/mcp.json` 写入 MCP 服务器配置，在该项目开启 dsh 会话时自动装载（经官方
-`@deepseek-ai/dsh-mcp-client`），文件改动热重载到运行中的 dsh 进程，并按
-会话 cwd 控制工具可见性。`dsh-project-mcp-manager` 的默认 bundle 包含装载器和
+`@deepseek-ai/dsh-mcp-client`），文件改动热重载到运行中的 dsh 进程，并按会话
+原始项目（`session.header.cwd`）控制工具可见性。`dsh-project-mcp-manager` 的默认 bundle 包含装载器和
 配套包 `dsh-project-mcp-ui` 提供的 web 端与桌面端设置页。UI 默认启用，可以
 单独停用；装载器继续工作。
 
-**能力边界**（dsh ≥ 0.2.0-rc.2）：协议、重连、工具名、resources 与服务器
+**能力边界**（dsh ≥ 0.2.1-rc.2）：协议、重连、工具名、resources 与服务器
 instructions 归官方 client。发行版 profile 已经装了共享的 MCP 资源工具。官方
 配置是 profile 层 Cordis patch（该层自有 HMR）加上 `plugin_manager`。宿主还没做、
 仍由本插件负责的是：
 
 1. 项目级发现：`<projectRoot>/.dsh/mcp.yml`、`.dsh/mcp.json`，以及只读的遗留
    `.mcp.json`。
-2. 按会话 cwd 隔离工具可见性。
+2. 按会话原始项目（`session.header.cwd`）隔离工具可见性。`working_directory`
+   不挪这个焦点。
 3. MCP 专用配置格式、`dsh-mcp` CLI 和设置页。
 
 项目文件热重载是本插件自己的文件监听，不替代官方 profile HMR。**传输类型由官方
-client 决定。** v0.7.x 与 v0.8.x 面向 dsh `0.2.0` 线（从 0.2.0-rc.2 起）。仍在 dsh 0.1.5
-上的宿主继续用插件 v0.6.0。
+client 决定。** v0.9.x 面向 dsh `0.2` 线（从 0.2.1-rc.2 起，`engines.dsh` 为
+`^0.2.1-rc.2`）。dsh 0.2.0 继续用插件 v0.8.2。仍在 dsh 0.1.5 上的宿主继续用插件
+v0.6.0。
 
 若这个插件对你有帮助，欢迎给仓库点一颗
 [star](https://github.com/wldxiaobai/dsh-project-mcp-manager)。遇到问题、宿主
@@ -43,13 +45,16 @@ client 决定。** v0.7.x 与 v0.8.x 面向 dsh `0.2.0` 线（从 0.2.0-rc.2 起
 - [查询面](guide/service.zh.md)——`ctx.projectMcp`、`projectMcp/updated` 事件、
   包入口导出的视图类型，以及对配套 UI 的语义化版本承诺。
 
-设计与发布记录（中文）：[dsh 0.2.0-rc.2 适配记录](design/adaptation-dsh-0.2.0-rc.2.md) ·
+设计与发布记录（中文）：[dsh 0.2.1-rc.2 适配记录](design/adaptation-dsh-0.2.1-rc.2.md) ·
+[dsh 0.2.0-rc.2 适配记录](design/adaptation-dsh-0.2.0-rc.2.md) ·
 [dsh 0.1.6-alpha.2 适配方案](design/adaptation-dsh-0.1.6-alpha.2.md) ·
 [dsh 0.1.5-rc.2 适配记录](design/adaptation-dsh-0.1.5-rc2.md) ·
 [dsh 0.1.5-rc.1 适配记录](design/adaptation-dsh-0.1.5-rc1.md) ·
 [dsh 0.1.2-rc.1 适配记录](design/adaptation-dsh-0.1.2-rc1.md) ·
 [JSON 配置层设计提案](design/proposal-json-mcp-config.md) ·
 [运行时稳健性与 JSON 互通提案](design/proposal-runtime-robustness-and-json-interop.md) ·
+[v0.9.0 发布说明](releases/v0.9.0.md) ·
+[v0.8.2 发布说明](releases/v0.8.2.md) ·
 [v0.7.2 发布说明](releases/v0.7.2.md) ·
 [v0.7.1 发布说明](releases/v0.7.1.md) ·
 [v0.7.0 发布说明](releases/v0.7.0.md) ·
@@ -130,7 +135,8 @@ dsh plugin --profile web add link:<你的 dsh-mcp-project 源码目录>
 
 **升级/锁定版本**：重跑方式一的 `add` 命令并带上目标版本后缀——`@latest`
 升级到最新，`@<version>` 锁定指定发布版。默认 UI 需选择上文所述的 manager/UI
-同步发布版。v0.7.x 与 v0.8.x 需要 dsh 0.2.0-rc.2（`0.2.0` 线）。
+同步发布版。v0.9.x 需要 dsh 0.2.1-rc.2 或更新的 `0.2` 发布版（`engines.dsh`：
+`^0.2.1-rc.2`）。v0.7.x 与 v0.8.x 需要 dsh 0.2.0-rc.2（`0.2.0` 线）。
 dsh 0.1.5 继续用插件 `@0.6.0`。
 
 **设置页（默认包含）**：上面的 manager 安装会自动带上 web 端和桌面端 UI。
@@ -170,10 +176,12 @@ pnpm test          # node 直跑 test/ 下的 .mjs（装载器、CLI 与设置�
   立刻卸载，避免桌面端切走后别的项目的工具还留在全局工具层。条目与文件监听保留。
   **用户层每行只装载一个实例**（全局，与项目数无关）
   ——详见[配置来源与分层](guide/layers.zh.md)。
-- **热重载**：chokidar 监听各项目根（depth 2，忽略 node_modules/.git/.hg/
-  .svn），但只有**已知项目根的精确配置文件**（`<projectRoot>/.dsh/mcp.yml`、
-  `<projectRoot>/.dsh/mcp.json` 与 `<projectRoot>/.mcp.json`）的改动经 150ms
-  防抖触发全量对账：新增行装载、删除行卸载、配置变化重装。另有独立 watcher 以
+- **热重载**：chokidar 只监听已知项目根和它的 `.dsh`（depth 1）。放行的是
+  项目根、`.dsh` 和三个配置文件，其它路径一律忽略，因此不会打开 `lib/`、
+  `src/`、`build/`，Windows 上构建时可以删掉这些目录。只有**已知项目根的精确
+  配置文件**（`<projectRoot>/.dsh/mcp.yml`、`<projectRoot>/.dsh/mcp.json` 与
+  `<projectRoot>/.mcp.json`）的改动经 150ms 防抖触发全量对账：新增行装载、
+  删除行卸载、配置变化重装。另有独立 watcher 以
   **精确文件路径**监听用户层：`~/.dsh/mcp.yml`、`~/.dsh/mcp.json`、
   `~/.dsh/profiles/<当前 profile>/mcp.yml` 与 `mcp.json`，以及 `$DSH_HOME/dsh-mcp.json`
   （对方插件的全局存储；只监听以便创建时能立刻诊断，从不装载）。chokidar v5
