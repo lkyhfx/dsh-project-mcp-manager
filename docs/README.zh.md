@@ -113,8 +113,15 @@ cd $env:USERPROFILE\.dsh\profiles\web
 pnpm add dsh-project-mcp-manager@latest
 ```
 
-**方式三：本地开发安装**——先构建源码仓库，再只链接根 manager 包。workspace
-依赖提供匹配的 UI，无需另外链接 UI，也无需单独选择 UI bundle：
+**不支持从 Git 安装（`github:` / `pnpm add github:<owner>/repo#<sha>`）。**
+pnpm 对 Git 依赖只是在检出的目录上打包，并拒绝为声明了构建脚本的 Git 源执行
+脚本，而 DSH profile 无法为 Git 源放行；因此本仓库根包不声明 `prepare` 脚本。
+请使用 npm 发布版本（方式一、方式二）或本地开发链接（方式三）。源码仓库里的
+`pnpm pack` 仍会构建核心与 UI 两部分，用于发布。
+
+**方式三：本地开发安装**——先构建源码仓库，再只链接根 manager 包。匹配的 UI
+来自仓库内的 `packages/ui` 源码，发布时构建进同一个 tarball，无需另外链接 UI，
+也无需单独选择 UI bundle：
 
 ```powershell
 # 在源码仓库内运行

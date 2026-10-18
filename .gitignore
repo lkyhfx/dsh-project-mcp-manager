@@ -1,4 +1,7 @@
 node_modules/
+# Built output stays out of Git. `packages/ui/lib` matches the leading `lib/`
+# rule too, but the release tarball ships it under `packages/ui/lib`, so keep it.
 lib/
+!packages/ui/lib/
 *.tsbuildinfo
 .dsh/

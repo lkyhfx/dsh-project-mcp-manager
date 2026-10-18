@@ -124,9 +124,18 @@ cd $env:USERPROFILE\.dsh\profiles\web
 pnpm add dsh-project-mcp-manager@latest
 ```
 
+**Installing from Git (`github:` / `pnpm add github:<owner>/repo#<sha>`) is not
+supported.** pnpm packs a Git-hosted dependency from the checked-out tree and
+refuses a Git source whose package declares a build script, and a DeepSeek
+Harness profile cannot allow it; this repository therefore declares no
+`prepare` script. Use a published version (option 1 or 2) or the local
+development link (option 3) instead. `pnpm pack` in a checkout still builds both
+halves for release publishing.
+
 **Option 3: local development install** — build the checkout, then link only
-its root manager package. The workspace dependency supplies the matching UI;
-no separate UI link or bundle selection is needed:
+its root manager package. The nested `packages/ui` source supplies the matching
+UI, which is built into the same tarball for release; no separate UI link or
+bundle selection is needed:
 
 ```powershell
 # Run in the source checkout

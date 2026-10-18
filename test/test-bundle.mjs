@@ -7,8 +7,9 @@ const ui = JSON.parse(await readFile(new URL("../packages/ui/package.json", impo
 const patch = parse(await readFile(new URL("../cordis.patch.yml", import.meta.url), "utf8"));
 
 assert.equal(ui.version, root.version, "loader and UI must be released together");
-assert.equal(root.dependencies[ui.name], `workspace:${root.version}`, "pack must resolve an exact UI dependency, not an optional dependency or a range");
-assert.equal(ui.peerDependencies[root.name], root.version, "UI must consume the matching service contract");
+assert.equal(ui.private, true, "the UI ships inside the loader tarball and is never installed on its own");
+assert.equal(root.dependencies[ui.name], undefined, "a Git install cannot resolve workspace: — the loader must not depend on the UI package");
+assert.equal(ui.peerDependencies?.[root.name], undefined, "UI ships inside the loader, so it has no separate peer to satisfy");
 assert.equal(root.optionalDependencies?.[ui.name], undefined, "UI is shipped by default, not optional");
 assert.equal(root.dsh.bundle.patch, "./cordis.patch.yml");
 assert.ok(root.files.includes("cordis.patch.yml"));
@@ -22,9 +23,13 @@ assert.equal(ui.dsh.client.platform, "web");
 assert.equal(ui.exports["./client"], "./lib/client.js");
 assert.ok(ui.files.includes("lib"));
 
-// Build the loader first: UI consumes its declarations and root-level npm
-// lifecycle scripts must not rely on topological order in a cyclic workspace.
-assert.equal(root.scripts.build, "npm run build:core && npm --prefix packages/ui run build");
+// A Git install is packed, never built by pnpm, so the only publishable
+// artifact is the tarball: packing must build both halves.
+assert.equal(root.scripts["build:ui"], "npm --prefix packages/ui run build");
+assert.equal(root.scripts.build, "npm run clean && npm run build:core && npm run build:ui");
+assert.equal(root.scripts.prepack, "npm run build", "packing must build the loader and the UI");
+assert.equal(root.scripts.prepare, undefined, "a prepare script makes pnpm refuse every Git install of this repository");
+assert.equal(root.scripts.INSTALL, "node scripts/check-install.mjs", "the INSTALL hook must explain an unbuilt Git install");
 for (const file of ["../lib/index.js", "../lib/index.d.ts", "../packages/ui/lib/index.js", "../packages/ui/lib/index.d.ts", "../packages/ui/lib/client.js"]) {
   assert.ok((await readFile(new URL(file, import.meta.url), "utf8")).length > 0, `${file} must be built before packaging`);
 }

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The UI component is folded into the loader package.** `dsh-project-mcp-ui`
+  is now a private source package under `packages/ui`; the root manifest no
+  longer depends on it, so `pnpm pack` (and the `dsh plugin` tarball install)
+  produces one self-contained package instead of a `workspace:` dependency
+  that only resolves inside this repository.
+- **No `prepare` script.** pnpm refuses to run build scripts for Git-hosted
+  packages, and a DeepSeek Harness profile cannot allow that, so installing
+  this repository with `github:` / `pnpm add github:...` was guaranteed to fail.
+  The unsupported path now fails with an explicit message from the `INSTALL`
+  hook (`scripts/check-install.mjs`) instead of a raw `MODULE_NOT_FOUND`.
+
 ## [0.9.0] - 2026-10-17
 
 Versioned together with `dsh-project-mcp-ui` 0.9.0. This source version and
