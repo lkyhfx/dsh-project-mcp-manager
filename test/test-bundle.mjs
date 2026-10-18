@@ -27,7 +27,7 @@ assert.ok(ui.files.includes("lib"));
 // declares any build or prepublish script (prepare, prepack, publish) is
 // refused outright. Keep the local scripts, and explain the gap in INSTALL.
 assert.equal(root.scripts["build:ui"], "npm --prefix packages/ui run build");
-assert.equal(root.scripts.build, "npm run clean && npm run build:core && npm run build:ui && npm run bundle:deps", "packing must vendor the DSH host the profile will not install");
+assert.equal(root.scripts.build, "npm run bundle:deps && npm run clean && npm run build:core && npm run build:ui", "packing must vendor the DSH host the profile will not install");
 assert.equal(root.scripts.prepack, undefined, "prepack (a prepublish script) makes pnpm refuse every Git install of this repository");
 assert.equal(root.scripts.publish, undefined, "publish (a prepublish script) makes pnpm refuse every Git install of this repository");
 assert.equal(root.scripts.prepare, undefined, "a prepare script makes pnpm refuse every Git install of this repository");

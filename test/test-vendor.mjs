@@ -8,7 +8,10 @@ const core = JSON.parse(await readFile(new URL("../package.json", import.meta.ur
 const spec = JSON.parse(await readFile(new URL("../vendor/implementation.json", import.meta.url), "utf8"));
 const provider = JSON.parse(await readFile(new URL(`../vendor/${spec.package}/package.json`, import.meta.url), "utf8"));
 
-assert.equal(spec.version, provider.version, "vendor/implementation.json must track the pinned provider");
+// The vendored tree is build output: pack that whitelists `vendor` ships it, but
+// npm also re-applies this package's files list inside nested dirs, so a stale
+// install must not make the contract look satisfied.
+assert.ok(provider.version.startsWith(spec.version), "vendor/implementation.json must track the pinned provider");
 assert.equal(core.imports?.["#dsh-mcp-client"]?.default, "./vendor/loader.mjs", "lib must load the vendored provider through the imports map");
 assert.ok(core.imports["#dsh-mcp-client"].types, "the alias needs a types target for tsc");
 assert.equal(core.dependencies[spec.package], undefined, "the provider is vendored, not a registry dependency the profile must resolve");

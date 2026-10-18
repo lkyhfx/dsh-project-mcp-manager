@@ -49,14 +49,13 @@
   },
   "scripts": {
     "clean": "node scripts/clean.mjs",
-    "build": "npm run clean && npm run build:core && npm run build:ui && npm run bundle:deps",
+    "build": "npm run bundle:deps && npm run clean && npm run build:core && npm run build:ui",
     "build:core": "tsc -p tsconfig.json",
     "build:ui": "npm --prefix packages/ui run build",
     "bundle:deps": "node scripts/bundle-deps.mjs",
     "INSTALL": "node scripts/check-install.mjs",
     "pretest": "npm run build",
-    "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-project-watch.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs",
-    "build:vendor": "node scripts/bundle-deps.mjs"
+    "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-project-watch.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs"
   },
   "devDependencies": {
     "@deepseek-ai/dsh-mcp-client": "0.2.1-rc.2",
