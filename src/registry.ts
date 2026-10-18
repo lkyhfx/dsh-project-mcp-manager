@@ -45,7 +45,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { access, mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import type { Context } from "@deepseek-ai/cordis";
-import * as mcpClient from "@deepseek-ai/dsh-mcp-client";
+import * as mcpClient from "#dsh-mcp-client";
 import { PROJECT_MCP_UPDATED_EVENT } from "./service.js";
 import { extractManagedRows, readPatchFile, updateManagedRows, withPatchLock, MCP_PLUGIN_NAME, type PatchRow } from "./mcp-file.js";
 import {

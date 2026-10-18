@@ -1,11 +1,13 @@
 {
-  "name": "dsh-mcp-runtime",
+  "name": "dsh-mcp-client",
+  "package": "@deepseek-ai/dsh-mcp-client",
   "version": "0.2.1-rc.2",
-  "private": true,
-  "description": "The DSH runtime packages @deepseek-ai/dsh-mcp-client needs as peers, pinned to the release this plugin targets, so a profile can install the plugin while keeping autoInstallPeers: false.",
-  "license": "MIT",
-  "dependencies": {
+  "entry": "lib/index.js",
+  "hosts": {
     "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/cordis-plugin-include": "1.0.10",
+    "@deepseek-ai/cordis-plugin-loader": "1.0.6",
+    "@deepseek-ai/cosmokit": "1.8.6",
     "@deepseek-ai/dsh-agent": "0.2.1-rc.2",
     "@deepseek-ai/dsh-attachment": "0.2.1-rc.2",
     "@deepseek-ai/dsh-brand": "0.2.1-rc.2",
@@ -30,9 +32,8 @@
     "@deepseek-ai/dsh-user-approval": "0.2.1-rc.2",
     "@deepseek-ai/dsh-util-values": "0.2.1-rc.2",
     "@deepseek-ai/dsh-working-directory": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-workspace": "0.2.1-rc.2"
-  },
-  "type": "module",
-  "main": "index.js",
-  "types": "index.d.ts"
+    "@deepseek-ai/dsh-workspace": "0.2.1-rc.2",
+    "@deepseek-ai/schemastery": "3.18.5",
+    "node-addon-require-builtin": "0.1.9"
+  }
 }

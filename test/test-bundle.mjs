@@ -27,7 +27,7 @@ assert.ok(ui.files.includes("lib"));
 // declares any build or prepublish script (prepare, prepack, publish) is
 // refused outright. Keep the local scripts, and explain the gap in INSTALL.
 assert.equal(root.scripts["build:ui"], "npm --prefix packages/ui run build");
-assert.equal(root.scripts.build, "npm run clean && npm run build:core && npm run build:ui");
+assert.equal(root.scripts.build, "npm run clean && npm run build:core && npm run build:ui && npm run bundle:deps", "packing must vendor the DSH host the profile will not install");
 assert.equal(root.scripts.prepack, undefined, "prepack (a prepublish script) makes pnpm refuse every Git install of this repository");
 assert.equal(root.scripts.publish, undefined, "publish (a prepublish script) makes pnpm refuse every Git install of this repository");
 assert.equal(root.scripts.prepare, undefined, "a prepare script makes pnpm refuse every Git install of this repository");
@@ -39,18 +39,3 @@ const client = await readFile(new URL("../packages/ui/lib/client.js", import.met
 assert.ok(client.includes('id: "dsh-project-mcp-ui"'), "browser module identity must stay on the full UI package name");
 console.log("PASS  default bundle ships loader and same-version UI components with built artifacts");
 
-// Profiles are initialized with autoInstallPeers: false, so the loader must
-// bring its host peers as regular dependencies; otherwise the profile cannot
-// load @deepseek-ai/dsh-mcp-client.
-const runtime = JSON.parse(await readFile(new URL("../packages/dsh-runtime/package.json", import.meta.url), "utf8"));
-assert.equal(root.dependencies[runtime.name], "file:./packages/dsh-runtime", "the loader must ship the host-peer closure via the vendored runtime package");
-assert.equal(runtime.dependencies["@deepseek-ai/cordis"], "4.0.5", "DSH packages peer on cordis ~4.0.5");
-assert.equal(runtime.dependencies["@deepseek-ai/dsh-mcp-client"], undefined, "the provider is the loader's own dependency, not a second copy");
-for (const name of ["@deepseek-ai/dsh-mcp-client"]) {
-  const peers = JSON.parse(await readFile(new URL(`../node_modules/${name}/package.json`, import.meta.url), "utf8")).peerDependencies;
-  for (const [peer, range] of Object.entries(peers)) {
-    if (peer === "@deepseek-ai/cordis") continue;
-    assert.equal(runtime.dependencies[peer]?.replace(/[\^~]/, ""), range.replace(/[\^~]/, ""), `${peer} @${range} must be pinned in packages/dsh-runtime`);
-  }
-}
-console.log("PASS  the loader ships the dsh-mcp-client host-peer closure");

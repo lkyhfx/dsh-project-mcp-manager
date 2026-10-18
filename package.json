@@ -43,33 +43,70 @@
     "cordis"
   ],
   "dependencies": {
-    "@deepseek-ai/dsh-mcp-client": "^0.2.1-rc.2",
     "chokidar": "^5.0.0",
     "yaml": "^2.9.0",
-    "zod": "^4.4.3",
-    "dsh-mcp-runtime": "file:./packages/dsh-runtime"
+    "zod": "^4.4.3"
   },
   "scripts": {
-    "clean": "node -e \"const fs=require('node:fs');fs.rmSync('lib',{recursive:true,force:true});fs.rmSync('packages/ui/lib',{recursive:true,force:true})\"",
-    "build": "npm run clean && npm run build:core && npm run build:ui",
+    "clean": "node scripts/clean.mjs",
+    "build": "npm run clean && npm run build:core && npm run build:ui && npm run bundle:deps",
     "build:core": "tsc -p tsconfig.json",
     "build:ui": "npm --prefix packages/ui run build",
+    "bundle:deps": "node scripts/bundle-deps.mjs",
     "INSTALL": "node scripts/check-install.mjs",
     "pretest": "npm run build",
-    "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-project-watch.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs"
+    "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-project-watch.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs",
+    "build:vendor": "node scripts/bundle-deps.mjs"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-mcp-client": "0.2.1-rc.2",
+    "@deepseek-ai/cosmokit": "1.8.6",
+    "@deepseek-ai/dsh-agent": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-attachment": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-brand": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-fs": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-http-proxy": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-llm": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-mcp-resources": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-ptc-runtime": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-sandbox": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-sandbox-policy": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-scope": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-session": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-session-persistence": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-session-projection": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-storage": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-storage-domain": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-subprocess": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-timeout": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-typert-protocol": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-user-approval": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-util-values": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-working-directory": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-workspace": "0.2.1-rc.2",
+    "@deepseek-ai/schemastery": "3.18.5",
+    "node-addon-require-builtin": "0.1.9",
+    "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/cordis-plugin-include": "1.0.10",
+    "@deepseek-ai/cordis-plugin-loader": "1.0.6",
+    "typescript": "^7.0.2",
+    "@types/node": "^26.2.0"
   },
   "files": [
     "lib",
     "packages/ui",
-    "packages/dsh-runtime",
+    "vendor",
     "cordis.patch.yml",
     "README.md",
     "docs",
     "LICENSE"
   ],
-  "devDependencies": {
-    "@deepseek-ai/cordis": "^4.0.5",
-    "@types/node": "^26.2.0",
-    "typescript": "^7.0.2"
+  "imports": {
+    "#dsh-mcp-client": {
+      "types": "./vendor/loader.d.mts",
+      "default": "./vendor/loader.mjs"
+    }
   }
 }

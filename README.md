@@ -124,11 +124,12 @@ cd $env:USERPROFILE\.dsh\profiles\web
 pnpm add dsh-project-mcp-manager@latest
 ```
 
-The plugin ships the DSH host packages that `@deepseek-ai/dsh-mcp-client`
-requires as peers (`packages/dsh-runtime`, pinned to the 0.2.1-rc.2 line), so it
-loads in a profile that keeps the official `autoInstallPeers: false`. Do not
-add `@deepseek-ai/*` packages to a profile to make the plugin load; if a future
-DSH release stops matching the pinned peers, update the plugin instead.
+The published tarball carries the DSH packages that `@deepseek-ai/dsh-mcp-client`
+needs as peers (`vendor/`, pinned to the 0.2.1-rc.2 line in
+`vendor/implementation.json`), so it loads in a profile that keeps the official
+`autoInstallPeers: false`. Do not add `@deepseek-ai/*` packages to a profile to
+make the plugin load; if a future DSH release stops matching the pinned host,
+update the plugin instead.
 
 **Installing from Git (`github:` / `pnpm add github:<owner>/repo#<sha>`) is not
 supported.** pnpm packs a Git-hosted dependency from the checked-out tree and
