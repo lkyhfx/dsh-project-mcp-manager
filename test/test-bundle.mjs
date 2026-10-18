@@ -38,3 +38,19 @@ for (const file of ["../lib/index.js", "../lib/index.d.ts", "../packages/ui/lib/
 const client = await readFile(new URL("../packages/ui/lib/client.js", import.meta.url), "utf8");
 assert.ok(client.includes('id: "dsh-project-mcp-ui"'), "browser module identity must stay on the full UI package name");
 console.log("PASS  default bundle ships loader and same-version UI components with built artifacts");
+
+// Profiles are initialized with autoInstallPeers: false, so the loader must
+// bring its host peers as regular dependencies; otherwise the profile cannot
+// load @deepseek-ai/dsh-mcp-client.
+const runtime = JSON.parse(await readFile(new URL("../packages/dsh-runtime/package.json", import.meta.url), "utf8"));
+assert.equal(root.dependencies[runtime.name], "file:./packages/dsh-runtime", "the loader must ship the host-peer closure via the vendored runtime package");
+assert.equal(runtime.dependencies["@deepseek-ai/cordis"], "4.0.5", "DSH packages peer on cordis ~4.0.5");
+assert.equal(runtime.dependencies["@deepseek-ai/dsh-mcp-client"], undefined, "the provider is the loader's own dependency, not a second copy");
+for (const name of ["@deepseek-ai/dsh-mcp-client"]) {
+  const peers = JSON.parse(await readFile(new URL(`../node_modules/${name}/package.json`, import.meta.url), "utf8")).peerDependencies;
+  for (const [peer, range] of Object.entries(peers)) {
+    if (peer === "@deepseek-ai/cordis") continue;
+    assert.equal(runtime.dependencies[peer]?.replace(/[\^~]/, ""), range.replace(/[\^~]/, ""), `${peer} @${range} must be pinned in packages/dsh-runtime`);
+  }
+}
+console.log("PASS  the loader ships the dsh-mcp-client host-peer closure");

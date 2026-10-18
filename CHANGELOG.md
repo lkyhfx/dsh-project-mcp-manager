@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The plugin loads in a profile with the default `autoInstallPeers: false`.**
+  `@deepseek-ai/dsh-mcp-client` declares its host (`cordis`, `dsh-scope`,
+  `dsh-tools`, …) as peers, which a DSH profile never installs, so the loader
+  failed with `Cannot find package '@deepseek-ai/dsh-scope'`. The loader now
+  ships the 0.2.1-rc.2 host closure through the vendored, empty
+  `packages/dsh-runtime` dependency, so no profile setting has to change.
+
 ### Changed
 
 - **The UI component is folded into the loader package.** `dsh-project-mcp-ui`

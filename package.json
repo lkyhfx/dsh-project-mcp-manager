@@ -46,7 +46,8 @@
     "@deepseek-ai/dsh-mcp-client": "^0.2.1-rc.2",
     "chokidar": "^5.0.0",
     "yaml": "^2.9.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "dsh-mcp-runtime": "file:./packages/dsh-runtime"
   },
   "scripts": {
     "clean": "node -e \"const fs=require('node:fs');fs.rmSync('lib',{recursive:true,force:true});fs.rmSync('packages/ui/lib',{recursive:true,force:true})\"",
@@ -59,9 +60,8 @@
   },
   "files": [
     "lib",
-    "packages/ui/lib",
-    "packages/ui/package.json",
-    "packages/ui/README.md",
+    "packages/ui",
+    "packages/dsh-runtime",
     "cordis.patch.yml",
     "README.md",
     "docs",

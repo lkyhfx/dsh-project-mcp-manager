@@ -113,6 +113,11 @@ cd $env:USERPROFILE\.dsh\profiles\web
 pnpm add dsh-project-mcp-manager@latest
 ```
 
+插件自带 `@deepseek-ai/dsh-mcp-client` 所需的 DSH 宿主依赖（`packages/dsh-runtime`，
+固定在 0.2.1-rc.2 这一线），因此在保持官方 `autoInstallPeers: false` 的 profile
+里也能直接加载。不要为了让它加载而往 profile 的依赖里添加 `@deepseek-ai/*` 包；
+如果以后的 DSH 版本与这里的固定版本不再匹配，应升级插件而不是改 profile。
+
 **不支持从 Git 安装（`github:` / `pnpm add github:<owner>/repo#<sha>`）。**
 pnpm 对 Git 依赖只是在检出的目录上打包，并拒绝为声明了构建脚本的 Git 源执行
 脚本，而 DSH profile 无法为 Git 源放行；因此本仓库根包不声明 `prepare` 脚本。
