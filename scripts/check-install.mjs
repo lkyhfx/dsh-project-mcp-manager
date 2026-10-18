@@ -1,13 +1,12 @@
 // Reject a Git install after fetch when the checkout cannot
 // produce a working plugin.
 //
-// A Git-hosted dependency is packed from the checked-out tree, never built in
-// place: pnpm runs scripts only for a package that declares `prepare`, and a
-// DeepSeek Harness profile cannot allow that for a Git source. `prepack` and
-// `prepare` therefore stay out of the root manifest, and the tested plugin is
-// the published tarball (`pnpm pack` folds the built UI into it). This hook
-// explains that instead of letting the install fail later with a raw
-// MODULE_NOT_FOUND.
+// A Git-hosted dependency is packed from the checked-out tree and pnpm refuses
+// any Git source that declares a build or prepublish script (prepare, prepack,
+// publish); a DeepSeek Harness profile cannot allow that. Those scripts stay out
+// of the root manifest, so a Git install can never contain this repository's
+// build output. This hook names what is missing and fails the install instead
+// of letting the profile mount a broken bundle. Release tarballs carry it.
 import { existsSync, readFileSync } from "node:fs";
 
 const root = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));

@@ -53,7 +53,6 @@
     "build": "npm run clean && npm run build:core && npm run build:ui",
     "build:core": "tsc -p tsconfig.json",
     "build:ui": "npm --prefix packages/ui run build",
-    "prepack": "npm run build",
     "INSTALL": "node scripts/check-install.mjs",
     "pretest": "npm run build",
     "test": "node test/test-model.mjs && node test/test-mcp-file.mjs && node test/test-json-file.mjs && node test/test-json-write.mjs && node test/test-registry.mjs && node test/test-project-watch.mjs && node test/test-cli.mjs && node test/test-ui-collapse.mjs && node test/test-ui-paste.mjs && node test/test-ui-display.mjs && node packages/ui/test/panel-helpers.mjs && node test/test-bundle.mjs && node test/test-ui-lifecycle.mjs"
@@ -61,6 +60,8 @@
   "files": [
     "lib",
     "packages/ui/lib",
+    "packages/ui/package.json",
+    "packages/ui/README.md",
     "cordis.patch.yml",
     "README.md",
     "docs",

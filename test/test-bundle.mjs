@@ -23,11 +23,13 @@ assert.equal(ui.dsh.client.platform, "web");
 assert.equal(ui.exports["./client"], "./lib/client.js");
 assert.ok(ui.files.includes("lib"));
 
-// A Git install is packed, never built by pnpm, so the only publishable
-// artifact is the tarball: packing must build both halves.
+// A Git install is packed, never built by pnpm: a Git-hosted package that
+// declares any build or prepublish script (prepare, prepack, publish) is
+// refused outright. Keep the local scripts, and explain the gap in INSTALL.
 assert.equal(root.scripts["build:ui"], "npm --prefix packages/ui run build");
 assert.equal(root.scripts.build, "npm run clean && npm run build:core && npm run build:ui");
-assert.equal(root.scripts.prepack, "npm run build", "packing must build the loader and the UI");
+assert.equal(root.scripts.prepack, undefined, "prepack (a prepublish script) makes pnpm refuse every Git install of this repository");
+assert.equal(root.scripts.publish, undefined, "publish (a prepublish script) makes pnpm refuse every Git install of this repository");
 assert.equal(root.scripts.prepare, undefined, "a prepare script makes pnpm refuse every Git install of this repository");
 assert.equal(root.scripts.INSTALL, "node scripts/check-install.mjs", "the INSTALL hook must explain an unbuilt Git install");
 for (const file of ["../lib/index.js", "../lib/index.d.ts", "../packages/ui/lib/index.js", "../packages/ui/lib/index.d.ts", "../packages/ui/lib/client.js"]) {
